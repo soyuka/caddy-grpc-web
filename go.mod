@@ -4,7 +4,11 @@ go 1.19
 
 require (
 	github.com/caddyserver/caddy/v2 v2.6.1
-	github.com/improbable-eng/grpc-web v0.15.0
+	github.com/soyuka/grpcweb v0.1.0
+)
+
+replace (
+	github.com/soyuka/grpcweb => ../../projects/grpcweb
 )
 
 require (

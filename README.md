@@ -72,5 +72,3 @@ JSON:
 	}
 }
 ```
-
-You can also specify the `websocket_ping` parameter to an interval value >= 1s for websocket keep-alive pings to be enabled.

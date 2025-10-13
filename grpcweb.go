@@ -30,8 +30,11 @@ func (Handler) CaddyModule() caddy.ModuleInfo {
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	if grpcweb.IsGRPCWebRequest(r) {
-		// The new handler needs the gRPC server itself, which is the `next` handler.
-		webHandler := &grpcweb.Handler{GRPCServer: next}
+		grpcServerAdapter := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_ = next.ServeHTTP(w, r)
+		})
+
+		webHandler := &grpcweb.Handler{GRPCServer: grpcServerAdapter}
 		webHandler.ServeHTTP(w, r)
 		return nil // The request has been handled.
 	}

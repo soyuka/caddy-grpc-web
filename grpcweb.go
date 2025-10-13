@@ -17,9 +17,6 @@ func init() {
 
 // Handler is an HTTP handler that bridges gRPC-Web <--> gRPC requests.
 type Handler struct {
-	// We are keeping this field for compatibility with existing Caddyfiles,
-	// but our new library does not support WebSockets for gRPC-Web.
-	WebSocketPing caddy.Duration `json:"websocket_ping,omitempty"`
 }
 
 // CaddyModule returns the Caddy module information.
@@ -50,21 +47,7 @@ func (h *Handler) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			return d.ArgErr()
 		}
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
-			switch d.Val() {
-			case "websocket_ping":
-				// This is now a no-op but we parse it for backwards compatibility.
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				if _, err := caddy.ParseDuration(d.Val()); err != nil {
-					return d.Errf("bad interval value %s: %v", d.Val(), err)
-				}
-				if d.NextArg() {
-					return d.ArgErr()
-				}
-			default:
-				return d.Errf("unknown subdirective '%s'", d.Val())
-			}
+			return d.Errf("unknown subdirective '%s'", d.Val())
 		}
 	}
 	return nil
@@ -81,4 +64,3 @@ var (
 	_ caddyhttp.MiddlewareHandler = (*Handler)(nil)
 	_ caddyfile.Unmarshaler       = (*Handler)(nil)
 )
-
